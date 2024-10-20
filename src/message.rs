@@ -102,7 +102,7 @@ pub enum Msg {
     /// Call as originally issued by the Caller to the Dealer.
     Call {
         request: WampId,
-        options: WampDict,
+        options: Option<WampDict>,
         procedure: WampUri,
         arguments: Option<WampArgs>,
         arguments_kw: Option<WampKwArgs>,

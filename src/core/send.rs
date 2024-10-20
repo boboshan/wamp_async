@@ -52,7 +52,7 @@ pub enum Request<'a> {
     },
     Call {
         uri: WampString,
-        options: WampDict,
+        options: Option<WampDict>,
         arguments: Option<WampArgs>,
         arguments_kw: Option<WampKwArgs>,
         res: PendingCallResult,
@@ -364,7 +364,7 @@ pub async fn invoke_yield(
 pub async fn call(
     core: &mut Core<'_>,
     uri: WampString,
-    options: WampDict,
+    options: Option<WampDict>,
     arguments: Option<WampArgs>,
     arguments_kw: Option<WampKwArgs>,
     res: PendingCallResult,

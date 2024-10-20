@@ -1,12 +1,10 @@
+use futures::FutureExt;
 use std::collections::{HashMap, HashSet};
 use std::future::Future;
-use futures::FutureExt;
 
 use log::*;
 use tokio::sync::oneshot;
-use tokio::sync::{
-    mpsc, mpsc::UnboundedReceiver, mpsc::UnboundedSender,
-};
+use tokio::sync::{mpsc, mpsc::UnboundedReceiver, mpsc::UnboundedSender};
 use url::*;
 
 pub use crate::common::*;
@@ -563,6 +561,7 @@ impl<'a> Client<'a> {
     pub async fn call<T: AsRef<str>>(
         &self,
         uri: T,
+        options: Option<WampDict>,
         arguments: Option<WampArgs>,
         arguments_kw: Option<WampKwArgs>,
     ) -> Result<(Option<WampArgs>, Option<WampKwArgs>), WampError> {
@@ -570,7 +569,7 @@ impl<'a> Client<'a> {
         let (res, result) = oneshot::channel();
         if let Err(e) = self.ctl_channel.send(Request::Call {
             uri: uri.as_ref().to_string(),
-            options: WampDict::new(),
+            options,
             arguments,
             arguments_kw,
             res,

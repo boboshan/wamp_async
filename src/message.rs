@@ -252,7 +252,7 @@ impl Serialize for Msg {
                         options,
                         topic,
                         arguments.as_ref().unwrap_or(&WampArgs::new()),
-                        arguments_kw
+                        arguments_kw,
                     )
                         .serialize(serializer)
                 } else if let Some(arguments) = arguments {
@@ -313,16 +313,29 @@ impl Serialize for Msg {
                     (
                         CALL_ID,
                         request,
-                        options,
+                        options.as_ref().unwrap_or(&WampDict::new()),
                         procedure,
                         arguments.as_ref().unwrap_or(&WampArgs::new()),
                         arguments_kw,
                     )
                         .serialize(serializer)
                 } else if let Some(arguments) = arguments {
-                    (CALL_ID, request, options, procedure, arguments).serialize(serializer)
+                    (
+                        CALL_ID,
+                        request,
+                        options.as_ref().unwrap_or(&WampDict::new()),
+                        procedure,
+                        arguments,
+                    )
+                        .serialize(serializer)
                 } else {
-                    (CALL_ID, request, options, procedure).serialize(serializer)
+                    (
+                        CALL_ID,
+                        request,
+                        options.as_ref().unwrap_or(&WampDict::new()),
+                        procedure,
+                    )
+                        .serialize(serializer)
                 }
             }
             Msg::Result {
@@ -337,7 +350,7 @@ impl Serialize for Msg {
                         request,
                         details,
                         arguments.as_ref().unwrap_or(&WampArgs::new()),
-                        arguments_kw
+                        arguments_kw,
                     )
                         .serialize(serializer)
                 } else if let Some(arguments) = arguments {
@@ -395,7 +408,7 @@ impl Serialize for Msg {
                         request,
                         options,
                         arguments.as_ref().unwrap_or(&WampArgs::new()),
-                        arguments_kw
+                        arguments_kw,
                     )
                         .serialize(serializer)
                 } else if let Some(arguments) = arguments {
@@ -579,9 +592,7 @@ impl<'de> Deserialize<'de> for Msg {
                     request: v
                         .next_element()?
                         .ok_or_else(|| Error::missing_field("request"))?,
-                    options: v
-                        .next_element()?
-                        .ok_or_else(|| Error::missing_field("options"))?,
+                    options: v.next_element()?.unwrap_or(None),
                     procedure: v
                         .next_element()?
                         .ok_or_else(|| Error::missing_field("procedure"))?,
